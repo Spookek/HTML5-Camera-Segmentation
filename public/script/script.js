@@ -1,9 +1,11 @@
 import { ImageSegmenter, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision";
-// import { bodySegmentation  } from "https://cdn.jsdelivr.net/npm/@tensorflow-models/body-segmentation";
+
+import * as bodySegmentation from "https://cdn.jsdelivr.net/npm/@tensorflow-models/body-segmentation";
+
 // Get DOM elements
 const video = document.getElementById("webcam");
 const canvasElement = document.getElementById("canvas");
-const canvasCtx = canvasElement.getContext("2d");
+const canvasCtx = canvasElement.getContext("2d", {willReadFrequently: true});
 const webcamPredictions = document.getElementById("webcamPredictions");
 const demosSection = document.getElementById("demos");
 let enableWebcamButton;
@@ -14,30 +16,52 @@ let runningMode = "LIVE_STREAM";
 const resultWidthHeigth = 256;
 let imageSegmenter;
 let labels;
+// const legendColors = [
+//   [255, 255, 255, 255],
+//   [128, 62, 117, 255],
+//   [255, 104, 0, 255],
+//   [166, 189, 215, 255],
+//   [193, 0, 32, 255],
+//   [206, 162, 98, 255],
+//   [129, 112, 102, 255],
+//   [0, 125, 52, 255],
+//   [246, 118, 142, 255],
+//   [0, 83, 138, 255],
+//   [255, 112, 92, 255],
+//   [83, 55, 112, 255],
+//   [255, 142, 0, 255],
+//   [179, 40, 81, 255],
+//   [244, 200, 0, 255],
+//   [127, 24, 13, 255],
+//   [147, 170, 0, 255],
+//   [89, 51, 21, 255],
+//   [241, 58, 19, 255],
+//   [35, 44, 22, 255],
+//   [0, 161, 194, 255], // Vivid Blue
+// ];
 const legendColors = [
-  [255, 197, 0, 255],
-  [128, 62, 117, 255],
-  [255, 104, 0, 255],
-  [166, 189, 215, 255],
-  [193, 0, 32, 255],
-  [206, 162, 98, 255],
-  [129, 112, 102, 255],
-  [0, 125, 52, 255],
-  [246, 118, 142, 255],
-  [0, 83, 138, 255],
-  [255, 112, 92, 255],
-  [83, 55, 112, 255],
-  [255, 142, 0, 255],
-  [179, 40, 81, 255],
-  [244, 200, 0, 255],
-  [127, 24, 13, 255],
-  [147, 170, 0, 255],
-  [89, 51, 21, 255],
-  [241, 58, 19, 255],
-  [35, 44, 22, 255],
-  [0, 161, 194, 255], // Vivid Blue
+  [0, 0, 0, 255],
+  [255, 255, 255, 255],
+  [255, 255, 255, 255],
+  [255, 255, 255, 255],
 ];
 
+// const segmenter = await bodySegmentation.createSegmenter(bodySegmentation.SupportedModels.MediaPipeSelfieSegmentation);
+// const segmentation = await segmenter.segmentPeople(img);
+
+// // The mask image is an binary mask image with a 1 where there is a person and
+// // a 0 where there is not.
+// const coloredPartImage = await bodySegmentation.toBinaryMask(segmentation);
+// const opacity = 0.7;
+// const flipHorizontal = false;
+// const maskBlurAmount = 0;
+// const canvas = document.getElementById('canvas');
+// // Draw the mask image on top of the original image onto a canvas.
+// // The colored part image will be drawn semi-transparent, with an opacity of
+// // 0.7, allowing for the original image to be visible under.
+// bodySegmentation.drawMask(
+//     canvas, img, coloredPartImage, opacity, maskBlurAmount,
+//     flipHorizontal);
 
 //init segmentation function
 const createImageSegmenter = async () => {
@@ -45,16 +69,16 @@ const createImageSegmenter = async () => {
   imageSegmenter = await ImageSegmenter.createFromOptions(audio, {
     baseOptions: {
       // modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/deeplab_v3/float32/1/deeplab_v3.tflite",
-      // modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite", 
-      // modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter_landscape/float16/latest/selfie_segmenter_landscape.tflite",
-      modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_multiclass_256x256/float32/latest/selfie_multiclass_256x256.tflite",//so far this one was the most accurate
+      // modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite",
+      modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter_landscape/float16/latest/selfie_segmenter_landscape.tflite", //runs faster and works on mobile
+      // modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_multiclass_256x256/float32/latest/selfie_multiclass_256x256.tflite", //so far this one was the most accurate
       // modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/deeplab_v3/float32/latest/deeplab_v3.tflite",
       delegate: "GPU",
     },
     runningMode: runningMode,
     outputCategoryMask: true,
-    outputConfidenceMasks: false,
-
+    outputConfidenceMasks: true,
+    flipHorizontal: true,
   });
   labels = imageSegmenter.getLabels();
 };
@@ -62,6 +86,7 @@ createImageSegmenter();
 
 function callbackForVideo(result) {
   let imageData = canvasCtx.getImageData(0, 0, video.videoWidth, video.videoHeight).data;
+
   const mask = result.categoryMask.getAsFloat32Array();
   let j = 0;
 
@@ -70,11 +95,26 @@ function callbackForVideo(result) {
     const maskVal = Math.round(mask[i] * 255.0);
     const legendColor = legendColors[maskVal % legendColors.length];
     imageData[j] = (legendColor[0] + imageData[j]) / 2;
-    imageData[j + 1] = (legendColor[1] + imageData[j + 1]) / 2;
+    // imageData[j + 1] = (legendColor[1] + imageData[j + 1]) / 2;
     // imageData[j + 2] = (legendColor[2] + imageData[j + 2]) / 2;
     // imageData[j + 3] = (legendColor[3] + imageData[j + 3]) / 2;
     j += 4;
   }
+  // if (imageData && imageData.data) {
+  //   let j = 0;
+
+  //   for (let i = 0; i < mask.length; ++i) {
+  //     const maskValue = Math.round(mask[i] * 255.0);
+  //     const alpha = maskValue > 0 ? 255 : 0; // Set alpha to 255 for foreground, 0 for background
+
+  //     imageData.data[j + 3] = alpha; // Update the alpha channel
+  //     j += 4;
+  //   }
+
+  //   const uint8Array = new Uint8ClampedArray(imageData.data.buffer);
+  //   const dataNew = new ImageData(uint8Array, video.videoWidth, video.videoHeight);
+  //   canvasCtx.putImageData(dataNew, 0, 0);
+  // }
 
   // //debugging
   // for (let i = 0; i < mask.length; ++i) {
@@ -90,6 +130,10 @@ function callbackForVideo(result) {
   const uint8Array = new Uint8ClampedArray(imageData.buffer);
   const dataNew = new ImageData(uint8Array, video.videoWidth, video.videoHeight);
   canvasCtx.putImageData(dataNew, 0, 0);
+
+  // canvasCtx.globalCompositeOperation = "source-in";
+  // canvasCtx.globalCompositeOperation = "source-atop";
+
   if (webcamRunning === true) {
     window.requestAnimationFrame(predictWebcam);
   }
@@ -112,6 +156,8 @@ async function predictWebcam() {
   }
   lastWebcamTime = video.currentTime;
   canvasCtx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+  // canvasCtx.globalCompositeOperation="source-in";
+
   // canvasCtx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
   // Do not segmented if imageSegmenter hasn't loaded
   if (imageSegmenter === undefined) {
