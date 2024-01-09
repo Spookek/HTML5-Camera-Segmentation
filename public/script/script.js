@@ -86,35 +86,29 @@ createImageSegmenter();
 
 function callbackForVideo(result) {
   let imageData = canvasCtx.getImageData(0, 0, video.videoWidth, video.videoHeight).data;
-
   const mask = result.categoryMask.getAsFloat32Array();
   let j = 0;
 
   //testings
+  // for (let i = 0; i < mask.length; ++i) {
+  //   const maskVal = Math.round(mask[i] * 255.0);
+  //   const legendColor = legendColors[maskVal % legendColors.length];
+  //   imageData[j] = (legendColor[0] + imageData[j]) / 2;
+  //   // imageData[j + 1] = (legendColor[1] + imageData[j + 1]) / 2;
+  //   // imageData[j + 2] = (legendColor[2] + imageData[j + 2]) / 2;
+  //   // imageData[j + 3] = (legendColor[3] + imageData[j + 3]) / 2;
+  //   j += 4;
+  // }
+
   for (let i = 0; i < mask.length; ++i) {
     const maskVal = Math.round(mask[i] * 255.0);
-    const legendColor = legendColors[maskVal % legendColors.length];
-    imageData[j] = (legendColor[0] + imageData[j]) / 2;
+    const alpha = maskVal > 0 ? 0 : 255;
+    imageData[j + 3] = alpha;
     // imageData[j + 1] = (legendColor[1] + imageData[j + 1]) / 2;
     // imageData[j + 2] = (legendColor[2] + imageData[j + 2]) / 2;
     // imageData[j + 3] = (legendColor[3] + imageData[j + 3]) / 2;
     j += 4;
   }
-  // if (imageData && imageData.data) {
-  //   let j = 0;
-
-  //   for (let i = 0; i < mask.length; ++i) {
-  //     const maskValue = Math.round(mask[i] * 255.0);
-  //     const alpha = maskValue > 0 ? 255 : 0; // Set alpha to 255 for foreground, 0 for background
-
-  //     imageData.data[j + 3] = alpha; // Update the alpha channel
-  //     j += 4;
-  //   }
-
-  //   const uint8Array = new Uint8ClampedArray(imageData.data.buffer);
-  //   const dataNew = new ImageData(uint8Array, video.videoWidth, video.videoHeight);
-  //   canvasCtx.putImageData(dataNew, 0, 0);
-  // }
 
   // //debugging
   // for (let i = 0; i < mask.length; ++i) {
