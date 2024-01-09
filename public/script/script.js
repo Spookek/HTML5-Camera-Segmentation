@@ -1,14 +1,5 @@
-// Copyright 2023 The MediaPipe Authors.
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//      http://www.apache.org/licenses/LICENSE-2.0
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-import { ImageSegmenter, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.2";
+import { ImageSegmenter, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision";
+// import { bodySegmentation  } from "https://cdn.jsdelivr.net/npm/@tensorflow-models/body-segmentation";
 // Get DOM elements
 const video = document.getElementById("webcam");
 const canvasElement = document.getElementById("canvas");
@@ -19,7 +10,7 @@ let enableWebcamButton;
 let webcamRunning = false;
 const videoHeight = "360px";
 const videoWidth = "480px";
-let runningMode = "IMAGE";
+let runningMode = "LIVE_STREAM";
 const resultWidthHeigth = 256;
 let imageSegmenter;
 let labels;
@@ -46,39 +37,56 @@ const legendColors = [
   [35, 44, 22, 255],
   [0, 161, 194, 255], // Vivid Blue
 ];
+
+
+//init segmentation function
 const createImageSegmenter = async () => {
-  const audio = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.2/wasm");
+  const audio = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm");
   imageSegmenter = await ImageSegmenter.createFromOptions(audio, {
     baseOptions: {
-      modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/deeplab_v3/float32/1/deeplab_v3.tflite",
+      // modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/deeplab_v3/float32/1/deeplab_v3.tflite",
+      // modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite", 
+      // modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter_landscape/float16/latest/selfie_segmenter_landscape.tflite",
+      modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_multiclass_256x256/float32/latest/selfie_multiclass_256x256.tflite",//so far this one was the most accurate
+      // modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/deeplab_v3/float32/latest/deeplab_v3.tflite",
       delegate: "GPU",
     },
     runningMode: runningMode,
     outputCategoryMask: true,
     outputConfidenceMasks: false,
+
   });
   labels = imageSegmenter.getLabels();
 };
 createImageSegmenter();
-const imageContainers = document.getElementsByClassName("segmentOnClick");
-// Add click event listeners for the img elements.
-for (let i = 0; i < imageContainers.length; i++) {
-  imageContainers[i].getElementsByTagName("img")[0].addEventListener("click", handleClick);
-}
 
 function callbackForVideo(result) {
   let imageData = canvasCtx.getImageData(0, 0, video.videoWidth, video.videoHeight).data;
   const mask = result.categoryMask.getAsFloat32Array();
   let j = 0;
+
+  //testings
   for (let i = 0; i < mask.length; ++i) {
     const maskVal = Math.round(mask[i] * 255.0);
     const legendColor = legendColors[maskVal % legendColors.length];
     imageData[j] = (legendColor[0] + imageData[j]) / 2;
     imageData[j + 1] = (legendColor[1] + imageData[j + 1]) / 2;
-    imageData[j + 2] = (legendColor[2] + imageData[j + 2]) / 2;
-    imageData[j + 3] = (legendColor[3] + imageData[j + 3]) / 2;
+    // imageData[j + 2] = (legendColor[2] + imageData[j + 2]) / 2;
+    // imageData[j + 3] = (legendColor[3] + imageData[j + 3]) / 2;
     j += 4;
   }
+
+  // //debugging
+  // for (let i = 0; i < mask.length; ++i) {
+  //   const maskVal = Math.round(mask[i] * 255.0);
+  //   const legendColor = legendColors[maskVal % legendColors.length];
+  //   imageData[j] = (legendColor[0] + imageData[j]) / 2;
+  //   imageData[j + 1] = (legendColor[1] + imageData[j + 1]) / 2;
+  //   imageData[j + 2] = (legendColor[2] + imageData[j + 2]) / 2;
+  //   imageData[j + 3] = (legendColor[3] + imageData[j + 3]) / 2;
+  //   j += 4;
+  // }
+
   const uint8Array = new Uint8ClampedArray(imageData.buffer);
   const dataNew = new ImageData(uint8Array, video.videoWidth, video.videoHeight);
   canvasCtx.putImageData(dataNew, 0, 0);
@@ -87,7 +95,7 @@ function callbackForVideo(result) {
   }
 }
 /********************************************************************
-// Demo 2: Continuously grab image from webcam stream and segmented it.
+// WEBCAM
 ********************************************************************/
 // Check if webcam access is supported.
 function hasGetUserMedia() {
@@ -120,6 +128,7 @@ async function predictWebcam() {
   // Start segmenting the stream.
   imageSegmenter.segmentForVideo(video, startTimeMs, callbackForVideo);
 }
+
 // Enable the live webcam view and start imageSegmentation.
 async function enableCam(event) {
   if (imageSegmenter === undefined) {
