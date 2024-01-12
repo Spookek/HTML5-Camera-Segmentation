@@ -54,11 +54,24 @@ em {
 #output {
   margin: 0;
   width: 100vw;
+  max-width: 600px;
   height: 50vh;
-  margin-top: 70px;
+  margin-top: 20px;
   position: relative;
   background-color: tomato;
   display: flex;
   justify-content: center;
   align-items: flex-start;
+}
+
+#download_image{
+  height: 50px;
+  margin-top: 20px;
+  background-color: teal;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-family: roboto;
+  padding: 0 20px ;
 }

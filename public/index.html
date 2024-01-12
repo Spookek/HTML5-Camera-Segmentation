@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <head>
   <title>Webcam Masking</title>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
   <link rel="icon" href="https://miro.medium.com/v2/resize:fit:300/1*R4c8lHBHuH5qyqOtZb3h-w.png">
   <link rel="stylesheet" type="text/css" href="css/style.css" />
   <link rel="stylesheet" type="text/css" href="vendor/animate.css" />
@@ -47,14 +49,15 @@ limitations under the License. -->
     </div>
   </section>
 
-<div id="output">
-  <div id="canvas_container">
-    <canvas id="canvas"></canvas>
+  <div id="output">
+    <div id="canvas_container">
+      <canvas id="canvas"></canvas>
+    </div>
+    <div id="picture_frame" class="frame"></div>
+    <div id="bg_frame" class="frame"></div>
   </div>
-  <div id="picture_frame" class="frame"></div>
-  <div id="bg_frame" class="frame"></div>
-</div>
- 
+
+  <span id="download_image" class="mdc-button mdc-button--raised mdc-button__label">DOWNLOAD</span>
 
   <script src="script/data.js"></script>
   <script type="module" src="script/script.js"></script>

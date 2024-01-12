@@ -15,7 +15,21 @@ $(document).ready(function () {
   $("#canvas").attr("height", $("#canvas_container").height());
 
 
+$("#download_image").click(function(){
+  console.log("Downloading image");
+  html2canvas(document.getElementById("output")).then(function(canvas) {
+    document.body.appendChild(canvas);
 
+    var dataURL = canvas.toDataURL("image/jpg");
+    var downloadLink = document.createElement("a");
+    downloadLink.href = dataURL;
+    downloadLink.download = "canvas_image.png";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+
+
+});
+});
 
 
 
