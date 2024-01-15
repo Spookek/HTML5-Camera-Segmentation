@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<head>
+  <title>Webcam Masking</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <link rel="icon" href="https://miro.medium.com/v2/resize:fit:300/1*R4c8lHBHuH5qyqOtZb3h-w.png">
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <link rel="stylesheet" type="text/css" href="vendor/animate.css" />
+
+  <!-- Require the peer dependencies. -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-core"></script>
+
+  <!-- You must explicitly require a TF.js backend if you're not using the TF.js union bundle. -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-webgl"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/body-segmentation"></script>
+
+</head>
+
+<body>
+  <p id="version_text"></p>
+
+  <!-- Copyright 2023 The MediaPipe Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License. -->
+
+  <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+
+  <h2>MediaPipe Selfie Segmentation - model image output. Alt</h2>
+
+  <p>
+  
+  <!-- <canvas id="mycanvas" width="600" height="400" data-scrawl-canvas></canvas> -->
+  
+  
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
+
+
+
+  <section id="demos" class="invisible">
+
+    <h2>Demo: Alternative Webcam continuous segmentation</h2>
+
+    <!-- <div class="webcam">
+      <button id="webcamButton" class="mdc-button mdc-button--raised">
+        <span class="mdc-button__ripple"></span>
+        <span class="mdc-button__label">ENABLE WEBCAM</span>
+      </button>
+      <video id="webcam" autoplay style="display: none;"></video>
+
+    </div> -->
+  </section>
+
+  <div id="output">
+    <div id="canvas_container">
+      <!-- <canvas id="mycanvas"></canvas> -->
+  <canvas id="mycanvas" data-scrawl-canvas></canvas>
+
+      <!-- <canvas id="canvas2"></canvas> -->
+    </div>
+    <div id="picture_frame" class="frame"></div>
+    <div id="bg_frame" class="frame"></div>
+  </div>
+
+  <span id="download_image" class="mdc-button mdc-button--raised mdc-button__label">DOWNLOAD</span>
+
+  <script src="script/data.js"></script>
+  <script type="module" src="script/script.js"></script>
+
+
+
+</body>
+
+</html>

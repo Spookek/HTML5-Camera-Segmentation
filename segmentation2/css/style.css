@@ -1,0 +1,83 @@
+@use "@material";
+body {
+  font-family: roboto;
+  color: #3d3d3d;
+  --mdc-theme-primary: #007f8b;
+  --mdc-theme-on-primary: #f1f3f4;
+  background-color: skyblue;
+}
+
+h1 {
+  color: #007f8b;
+}
+
+h2 {
+  clear: both;
+}
+
+em {
+  font-weight: bold;
+}
+
+#canvas_container {
+  width: 100%;
+  height: 81.8%;
+  /* background-color: gold; */
+  position: absolute;
+  z-index: 3;
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+}
+
+#canvas_container canvas{
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#picture_frame {
+  background-image: url("../res/frames/frame_socialMediaPost.png");
+  z-index: 2;
+  background-size: contain;
+}
+
+#bg_frame{
+  background-image: url("../res/images/sky.jpg");
+  z-index: 1;
+  top: 0;
+  background-size: cover;
+}
+
+.frame {
+  background-position: center;
+  background-repeat: no-repeat;
+  position: absolute;
+  /* background-color: blanchedalmond; */
+  width: 100%;
+  height: 100%;
+}
+
+#output {
+  margin: 0;
+  width: 100vw;
+  max-width: 600px;
+  height: 50vh;
+  margin-top: 20px;
+  position: relative;
+  background-color: tomato;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+#download_image{
+  height: 50px;
+  margin-top: 20px;
+  background-color: teal;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-family: roboto;
+  padding: 0 20px ;
+}
