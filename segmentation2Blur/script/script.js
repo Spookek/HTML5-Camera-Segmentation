@@ -4,7 +4,7 @@ $(document).ready(function () {
 var canvasMaxWidth =  $("#canvas_container").width();
 var canvasMaxHeight =  $("#canvas_container").height();
 
-
+var blurAmount = 0.3;
 
   $("#mycanvas").attr("width", canvasMaxWidth);
   $("#mycanvas").attr("height", canvasMaxHeight);
@@ -31,7 +31,7 @@ var canvasMaxHeight =  $("#canvas_container").height();
   scrawl.makeFilter({
     name: "body-blur",
     method: "gaussianBlur",
-    radius: 3,
+    radius: blurAmount,
   });
 
   // MediaPipe functionality - we'll handle everything in a raw asset object, which a Scrawl-canvas Picture entity can then use as its source
