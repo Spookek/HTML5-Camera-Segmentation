@@ -13,6 +13,7 @@ let imageSegmenter;
 let labels;
 
 $(document).ready(function () {
+  console.log("DeepLab3");
   $("#canvas").attr("width", $("#canvas_container").width());
   $("#canvas").attr("height", $("#canvas_container").height());
   $("#canvas2").attr("width", $("#canvas_container").width());
@@ -43,8 +44,8 @@ const createImageSegmenter = async () => {
   imageSegmenter = await ImageSegmenter.createFromOptions(model, {
     baseOptions: {
       // modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/deeplab_v3/float32/1/deeplab_v3.tflite",
-      // modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite",
-      modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter_landscape/float16/latest/selfie_segmenter_landscape.tflite", //runs faster and works on mobile
+      modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite",
+      // modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter_landscape/float16/latest/selfie_segmenter_landscape.tflite", //runs faster and works on mobile
       // modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_multiclass_256x256/float32/latest/selfie_multiclass_256x256.tflite", //so far this one was the most accurate
       // modelAssetPath: "https://storage.googleapis.com/mediapipe-models/image_segmenter/deeplab_v3/float32/latest/deeplab_v3.tflite",
       delegate: "GPU",
@@ -70,7 +71,7 @@ function callbackForVideo(result) {
   // console.log(result.categoryMask);
   // console.log(result.confidenceMasks);
   let j = 0;
-  // console.log(mask_category[1]);
+  console.log(mask_category[3]);
 
   for (let i = 0; i < mask_category.length; ++i) {
     const maskVal = Math.round(mask_category[i] * 255.0);
