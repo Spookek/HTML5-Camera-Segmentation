@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@mediapipe/tasks-vision": "^0.10.9",
+    "@tensorflow-models/body-segmentation": "^1.0.2",
+    "@tensorflow/tfjs-backend-webgl": "^4.16.0",
+    "@tensorflow/tfjs-converter": "^4.16.0",
+    "@tensorflow/tfjs-core": "^4.16.0"
+  }
+}
